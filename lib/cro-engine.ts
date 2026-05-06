@@ -13,7 +13,10 @@ import {
   KeyEvidence,
 } from '@/types';
 
-const client = new Anthropic();
+const client = new Anthropic({
+  maxRetries: 6,       // retry up to 6 times on 429/5xx
+  timeout: 180_000,    // 3 minute timeout per attempt
+});
 
 function formatDate(date: Date): string {
   return date.toLocaleDateString('en-GB', {
