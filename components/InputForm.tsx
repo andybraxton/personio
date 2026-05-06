@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { CROInputs } from '@/types';
 
 interface Props {
@@ -159,6 +159,17 @@ function UploadZone({
   onChange: (updater: (prev: FieldState) => FieldState) => void;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Prevent browser from opening/downloading dropped files anywhere on the page
+  useEffect(() => {
+    const prevent = (e: DragEvent) => e.preventDefault();
+    window.addEventListener('dragover', prevent);
+    window.addEventListener('drop', prevent);
+    return () => {
+      window.removeEventListener('dragover', prevent);
+      window.removeEventListener('drop', prevent);
+    };
+  }, []);
 
   const handleFiles = useCallback(
     async (incoming: FileList | File[]) => {
