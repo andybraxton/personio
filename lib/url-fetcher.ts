@@ -1,116 +1,28 @@
 import { parse } from 'node-html-parser';
-import https from 'node:https';
-import http, { IncomingMessage } from 'node:http';
+import { spawnSync } from 'child_process';
+import path from 'path';
 import { ScrapedPage } from '@/types';
-
-const BROWSER_UA =
-  'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-interface FetchResult {
-  status: number;
-  text: string;
-  headers: Record<string, string | string[]>;
-}
-
-// Use Node's native http/https module (avoids undici's TLS fingerprint which WAFs detect)
-function nodeFetch(
-  url: string,
-  reqHeaders: Record<string, string>,
-  redirectsLeft = 5
-): Promise<FetchResult> {
-  return new Promise((resolve, reject) => {
-    let parsed: URL;
-    try {
-      parsed = new URL(url);
-    } catch {
-      return reject(new Error(`Invalid URL: ${url}`));
-    }
-
-    const isHttps = parsed.protocol === 'https:';
-    const lib = isHttps ? https : http;
-    const port = parsed.port ? parseInt(parsed.port) : isHttps ? 443 : 80;
-
-    const options = {
-      hostname: parsed.hostname,
-      port,
-      path: parsed.pathname + parsed.search,
-      method: 'GET',
-      headers: {
-        'User-Agent': BROWSER_UA,
-        Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        'Accept-Language': 'en-GB,en;q=0.9',
-        'Accept-Encoding': 'identity', // skip compression to simplify response handling
-        Connection: 'keep-alive',
-        ...reqHeaders,
-      },
-    };
-
-    const req = lib.request(options, (res: IncomingMessage) => {
-      // Follow redirects
-      if (
-        redirectsLeft > 0 &&
-        res.statusCode &&
-        [301, 302, 303, 307, 308].includes(res.statusCode) &&
-        res.headers.location
-      ) {
-        const next = res.headers.location.startsWith('http')
-          ? res.headers.location
-          : `${parsed.protocol}//${parsed.host}${res.headers.location}`;
-        res.resume();
-        return resolve(nodeFetch(next, reqHeaders, redirectsLeft - 1));
-      }
-
-      const chunks: Buffer[] = [];
-      res.on('data', (chunk: Buffer) => chunks.push(chunk));
-      res.on('end', () => {
-        resolve({
-          status: res.statusCode ?? 0,
-          text: Buffer.concat(chunks).toString('utf-8'),
-          headers: res.headers as Record<string, string | string[]>,
-        });
-      });
-      res.on('error', reject);
-    });
-
-    req.setTimeout(15000, () => {
-      req.destroy(new Error('Request timeout'));
-    });
-
-    req.on('error', reject);
-    req.end();
+function fetchWithPython(url: string): { status: number; html: string; finalUrl: string } {
+  const scriptPath = path.join(process.cwd(), 'scripts', 'scrape_url.py');
+  const result = spawnSync('python3', [scriptPath, url], {
+    timeout: 20000,
+    encoding: 'utf8',
+    maxBuffer: 10 * 1024 * 1024, // 10MB
   });
-}
 
-// Cookie jar: domain → array of "name=value" strings
-type CookieJar = Record<string, string[]>;
-
-function updateCookieJar(
-  setCookieHeader: string | string[] | undefined,
-  domain: string,
-  jar: CookieJar
-) {
-  const values = Array.isArray(setCookieHeader)
-    ? setCookieHeader
-    : setCookieHeader
-    ? [setCookieHeader]
-    : [];
-
-  jar[domain] ??= [];
-  for (const cookie of values) {
-    const nameVal = cookie.split(';')[0].trim();
-    const name = nameVal.split('=')[0];
-    const idx = jar[domain].findIndex((c) => c.startsWith(`${name}=`));
-    if (idx >= 0) jar[domain][idx] = nameVal;
-    else jar[domain].push(nameVal);
+  if (result.error) throw result.error;
+  if (!result.stdout?.trim()) {
+    throw new Error(result.stderr?.trim() || 'Python scraper returned no output');
   }
-}
 
-function cookieHeader(domain: string, jar: CookieJar): string {
-  return (jar[domain] ?? []).join('; ');
+  const data = JSON.parse(result.stdout);
+  if (data.error && !data.html) throw new Error(data.error);
+  return { status: data.status, html: data.html ?? '', finalUrl: data.url ?? url };
 }
 
 interface PageData {
@@ -223,39 +135,26 @@ function formatPageData(data: PageData): string {
 export async function scrapeJourneyPages(urls: string[]): Promise<ScrapedPage[]> {
   const results: ScrapedPage[] = [];
   const validUrls = urls.filter((u) => u.trim().length > 0);
-  const cookieJar: CookieJar = {};
 
   for (let i = 0; i < validUrls.length; i++) {
     const url = validUrls[i].trim();
-    const domain = new URL(url).hostname;
-    const prevUrl = i > 0 ? validUrls[i - 1].trim() : undefined;
 
-    if (i > 0) await sleep(1500);
+    if (i > 0) await sleep(1000);
 
     try {
-      const cookies = cookieHeader(domain, cookieJar);
-      const extraHeaders: Record<string, string> = {};
-      if (cookies) extraHeaders['Cookie'] = cookies;
-      if (prevUrl) extraHeaders['Referer'] = prevUrl;
+      const { status, html, finalUrl } = fetchWithPython(url);
 
-      const res = await nodeFetch(url, extraHeaders);
-
-      updateCookieJar(res.headers['set-cookie'], domain, cookieJar);
-
-      if (res.status === 429) {
-        results.push({ url, step: i + 1, title: url, text: '', error: 'Rate limited (429) — page skipped' });
-        await sleep(4000);
+      if (status === 429) {
+        results.push({ url, step: i + 1, title: url, text: '', error: 'Rate limited (429)' });
+        continue;
+      }
+      if (status < 200 || status >= 300) {
+        results.push({ url, step: i + 1, title: url, text: '', error: `HTTP ${status}` });
         continue;
       }
 
-      if (res.status < 200 || res.status >= 300) {
-        results.push({ url, step: i + 1, title: url, text: '', error: `HTTP ${res.status}` });
-        continue;
-      }
-
-      const data = extractPageData(res.text);
-      const text = formatPageData(data);
-      results.push({ url, step: i + 1, title: data.title || url, text });
+      const data = extractPageData(html);
+      results.push({ url: finalUrl, step: i + 1, title: data.title || url, text: formatPageData(data) });
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Fetch failed';
       results.push({ url, step: i + 1, title: url, text: '', error: message });
