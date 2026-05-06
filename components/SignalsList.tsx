@@ -75,7 +75,6 @@ export default function SignalsList({ signals }: Props) {
                 <span className={`w-1.5 h-1.5 rounded-full ${src.dot}`} />
                 {src.label}
               </span>
-              <span className="text-xs text-slate-500">{signal.theme}</span>
             </div>
 
             <div className="space-y-1.5">

@@ -49,17 +49,18 @@ interface Props {
   onBack: () => void;
 }
 
-type Tab = 'signals' | 'opportunities' | 'experiments' | 'pages';
+type Tab = 'pages' | 'signals' | 'opportunities' | 'experiments';
 
 const TABS: { id: Tab; label: string; color: string; activeColor: string }[] = [
+  { id: 'pages', label: 'Scanned Pages', color: 'text-slate-400', activeColor: 'text-cyan-300 border-b-2 border-cyan-400' },
   { id: 'signals', label: 'Signals', color: 'text-slate-400', activeColor: 'text-slate-200 border-b-2 border-slate-400' },
   { id: 'opportunities', label: 'Opportunities', color: 'text-slate-400', activeColor: 'text-teal-300 border-b-2 border-teal-400' },
   { id: 'experiments', label: 'Experiments', color: 'text-slate-400', activeColor: 'text-orange-300 border-b-2 border-orange-400' },
-  { id: 'pages', label: 'Scanned Pages', color: 'text-slate-400', activeColor: 'text-cyan-300 border-b-2 border-cyan-400' },
 ];
 
 export default function ReportView({ report, onBack }: Props) {
-  const [activeTab, setActiveTab] = useState<Tab>('signals');
+  const hasPages = (report.scrapedPages ?? []).length > 0;
+  const [activeTab, setActiveTab] = useState<Tab>(hasPages ? 'pages' : 'signals');
 
   const secs = Math.round(report.processingTimeMs / 1000);
 
@@ -88,7 +89,16 @@ export default function ReportView({ report, onBack }: Props) {
           </p>
 
           {/* Summary stats */}
-          <div className="grid grid-cols-3 gap-3 mt-4">
+          <div className={`grid gap-3 mt-4 ${hasPages ? 'grid-cols-4' : 'grid-cols-3'}`}>
+            {hasPages && (
+              <button
+                onClick={() => setActiveTab('pages')}
+                className="bg-slate-900/60 border border-slate-700/50 rounded-lg p-3 text-center hover:border-cyan-600 transition-colors"
+              >
+                <p className="text-2xl font-black text-cyan-300">{(report.scrapedPages ?? []).length}</p>
+                <p className="text-xs text-slate-500 mt-0.5">Pages</p>
+              </button>
+            )}
             <button
               onClick={() => setActiveTab('signals')}
               className="bg-slate-900/60 border border-slate-700/50 rounded-lg p-3 text-center hover:border-slate-500 transition-colors"
@@ -116,7 +126,7 @@ export default function ReportView({ report, onBack }: Props) {
 
       {/* Tab nav */}
       <div className="flex border-b border-slate-700/50 mb-6">
-        {TABS.filter((t) => t.id !== 'pages' || (report.scrapedPages ?? []).length > 0).map((tab) => (
+        {TABS.filter((t) => t.id !== 'pages' || hasPages).map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
