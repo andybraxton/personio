@@ -83,7 +83,7 @@ export default function OpportunitiesList({ opportunities }: Props) {
               <div>
                 <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Test Ideas</p>
                 <ol className="space-y-1.5">
-                  {opp.ideas.map((idea) => (
+                  {(opp.ideas ?? []).map((idea) => (
                     <li key={idea.number} className="flex items-start gap-2 text-sm text-slate-300">
                       <span className="shrink-0 w-5 h-5 rounded-full bg-indigo-800/50 text-indigo-300 text-xs font-bold flex items-center justify-center mt-0.5">
                         {idea.number}

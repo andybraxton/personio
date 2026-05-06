@@ -102,7 +102,7 @@ export default function ExperimentsList({ experiments }: Props) {
                 <div>
                   <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Secondary Metrics</p>
                   <ul className="space-y-1">
-                    {exp.secondaryMetrics.map((m, i) => (
+                    {(exp.secondaryMetrics ?? []).map((m, i) => (
                       <li key={i} className="text-sm text-slate-400 flex items-start gap-1.5">
                         <span className="text-slate-600 mt-0.5">•</span>
                         {m}
@@ -117,7 +117,7 @@ export default function ExperimentsList({ experiments }: Props) {
                 <div>
                   <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Key Evidence</p>
                   <div className="flex flex-wrap gap-1.5">
-                    {exp.keyEvidence.map((ev, i) => {
+                    {(exp.keyEvidence ?? []).map((ev, i) => {
                       const ec = evidenceTypeConfig[ev.type];
                       return (
                         <span

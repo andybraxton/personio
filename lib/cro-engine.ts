@@ -253,7 +253,7 @@ export async function runCROEngine(inputs: CROInputs): Promise<CROReport> {
 
   // Build signal index
   const signalMap = new Map<string, string>();
-  const signals: Signal[] = raw.signals.map((s: any, i: number) => {
+  const signals: Signal[] = (raw.signals ?? []).map((s: any, i: number) => {
     const scores: SignalScores = {
       evidenceStrength: Math.min(25, Math.max(0, s.scores.evidenceStrength)),
       relevance: Math.min(20, Math.max(0, s.scores.relevance)),
@@ -287,7 +287,7 @@ export async function runCROEngine(inputs: CROInputs): Promise<CROReport> {
   // Sort signals by score descending
   signals.sort((a, b) => b.totalScore - a.totalScore);
 
-  const opportunities: Opportunity[] = raw.opportunities.map((o: any, i: number) => {
+  const opportunities: Opportunity[] = (raw.opportunities ?? []).map((o: any, i: number) => {
     const cs = {
       evidence: Math.min(40, Math.max(0, o.confidenceScores.evidence)),
       supportingInput: Math.min(20, Math.max(0, o.confidenceScores.supportingInput)),
@@ -296,7 +296,7 @@ export async function runCROEngine(inputs: CROInputs): Promise<CROReport> {
     };
     const confidenceTotal = cs.evidence + cs.supportingInput + cs.experimentHistory + cs.strategicFit;
 
-    const relatedSignalIds = (o.signalDescriptions as string[]).map(
+    const relatedSignalIds = ((o.signalDescriptions ?? []) as string[]).map(
       (desc: string) => signalMap.get(desc) ?? desc
     );
 
@@ -306,7 +306,7 @@ export async function runCROEngine(inputs: CROInputs): Promise<CROReport> {
       theme: o.theme,
       relatedSignalIds,
       hypothesis: o.hypothesis,
-      ideas: (o.ideas as string[]).map((desc, j) => ({ number: j + 1, description: desc })),
+      ideas: ((o.ideas ?? []) as string[]).map((desc, j) => ({ number: j + 1, description: desc })),
       confidenceScores: cs,
       confidenceTotal,
       confidenceLevel: calcConfidenceLevel(confidenceTotal),
@@ -318,7 +318,7 @@ export async function runCROEngine(inputs: CROInputs): Promise<CROReport> {
 
   const opportunityMap = new Map(opportunities.map((o) => [o.title, o.id]));
 
-  const experiments: Experiment[] = raw.experiments.map((e: any, i: number) => {
+  const experiments: Experiment[] = (raw.experiments ?? []).map((e: any, i: number) => {
     const rs = {
       reach: Math.min(25, Math.max(0, e.riceScores.reach)),
       impact: Math.min(25, Math.max(0, e.riceScores.impact)),
@@ -327,7 +327,7 @@ export async function runCROEngine(inputs: CROInputs): Promise<CROReport> {
     };
     const riceTotal = rs.reach + rs.impact + rs.confidence + rs.effort;
 
-    const keyEvidence: KeyEvidence[] = (e.keyEvidenceLabels as string[]).map((label: string) => ({
+    const keyEvidence: KeyEvidence[] = ((e.keyEvidenceLabels ?? []) as string[]).map((label: string) => ({
       label,
       type: evidenceTypeToKey(label),
     }));
@@ -339,7 +339,7 @@ export async function runCROEngine(inputs: CROInputs): Promise<CROReport> {
       hypothesis: e.hypothesis,
       recommendedTest: e.recommendedTest,
       primaryMetric: e.primaryMetric,
-      secondaryMetrics: e.secondaryMetrics,
+      secondaryMetrics: e.secondaryMetrics ?? [],
       riceScores: rs,
       riceTotal,
       priority: calcPriority(riceTotal),
