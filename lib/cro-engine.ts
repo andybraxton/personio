@@ -266,7 +266,7 @@ export async function runCROEngine(inputs: CROInputs): Promise<CROReport> {
 
   const message = await createMessageWithRetry({
     model: 'claude-sonnet-4-6',
-    max_tokens: 8000,
+    max_tokens: 16000,
     tools: [ENGINE_TOOL],
     tool_choice: { type: 'tool', name: 'output_cro_analysis' },
     messages: [{ role: 'user', content: buildPrompt(inputs) }],
@@ -279,6 +279,10 @@ export async function runCROEngine(inputs: CROInputs): Promise<CROReport> {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const raw = toolUse.input as any;
+
+  if (!raw.experiments?.length) {
+    throw new Error('CRO engine returned no experiments — the response may have been cut off. Please try again.');
+  }
 
   // Build signal index
   const signalMap = new Map<string, string>();
