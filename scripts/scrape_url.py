@@ -3,7 +3,13 @@
 Called by the Next.js url-fetcher as a subprocess to bypass Node TLS fingerprinting."""
 import json
 import sys
-import requests
+import subprocess
+
+try:
+    import requests
+except ImportError:
+    subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'requests', '-q'])
+    import requests
 
 UA = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
