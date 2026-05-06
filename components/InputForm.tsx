@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { CROInputs } from '@/types';
 
 interface Props {
@@ -158,8 +158,6 @@ function UploadZone({
   state: FieldState;
   onChange: (updater: (prev: FieldState) => FieldState) => void;
 }) {
-  const inputRef = useRef<HTMLInputElement>(null);
-
   // Prevent browser from opening/downloading dropped files anywhere on the page
   useEffect(() => {
     const prevent = (e: DragEvent) => e.preventDefault();
@@ -243,27 +241,26 @@ function UploadZone({
         </div>
       )}
 
-      {/* Drop zone */}
-      <div
-        className={`relative border-2 border-dashed rounded-xl transition-all cursor-pointer ${
+      {/* Drop zone — label wraps the input for reliable native click-to-browse */}
+      <label
+        htmlFor={`upload-${fieldKey}`}
+        className={`relative border-2 border-dashed rounded-xl transition-all cursor-pointer block ${
           isDragging ? `${dragBg} scale-[1.01]` : `border-slate-700/60 bg-slate-900/40 ${border}`
         }`}
-        onDragEnter={(e) => { e.preventDefault(); onChange((p) => ({ ...p, dragging: true })); }}
-        onDragOver={(e) => { e.preventDefault(); onChange((p) => ({ ...p, dragging: true })); }}
-        onDragLeave={() => onChange((p) => ({ ...p, dragging: false }))}
-        onDrop={onDrop}
-        onClick={() => inputRef.current?.click()}
+        onDragEnter={(e) => { e.preventDefault(); e.stopPropagation(); onChange((p) => ({ ...p, dragging: true })); }}
+        onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); onChange((p) => ({ ...p, dragging: true })); }}
+        onDragLeave={(e) => { e.preventDefault(); e.stopPropagation(); onChange((p) => ({ ...p, dragging: false })); }}
+        onDrop={(e) => { e.preventDefault(); e.stopPropagation(); onDrop(e); }}
       >
         <input
-          ref={inputRef}
+          id={`upload-${fieldKey}`}
           type="file"
           multiple
           accept=".pdf,.docx,.txt,.md,.csv"
-          className="hidden"
-          onChange={(e) => e.target.files && handleFiles(e.target.files)}
-          key={fieldKey}
+          className="sr-only"
+          onChange={(e) => { if (e.target.files) { handleFiles(e.target.files); e.target.value = ''; } }}
         />
-        <div className="flex flex-col items-center justify-center py-6 px-4 text-center pointer-events-none">
+        <div className="flex flex-col items-center justify-center py-6 px-4 text-center">
           <svg className={`w-7 h-7 mb-2 ${accent}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
           </svg>
@@ -272,7 +269,7 @@ function UploadZone({
           </p>
           <p className="text-xs text-slate-600 mt-1">PDF, DOCX, TXT, MD, CSV</p>
         </div>
-      </div>
+      </label>
     </div>
   );
 }
