@@ -32,10 +32,10 @@ async function createMessageWithRetry(
     } catch (err: unknown) {
       const status = (err as { status?: number })?.status;
       const headers = (err as { headers?: Record<string, string> })?.headers;
-      if (status === 429 && attempt < maxAttempts - 1) {
+      if ((status === 429 || status === 529) && attempt < maxAttempts - 1) {
         const retryAfter = headers?.['retry-after'];
-        // Respect the server's Retry-After, or wait 30s / 60s / 90s progressively
-        const waitMs = retryAfter ? parseInt(retryAfter) * 1000 : (attempt + 1) * 30_000;
+        // 529 = overloaded (no Retry-After), 429 = rate limited (may have Retry-After)
+        const waitMs = retryAfter ? parseInt(retryAfter) * 1000 : (attempt + 1) * 20_000;
         await sleep(waitMs);
         continue;
       }

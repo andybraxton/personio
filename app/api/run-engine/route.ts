@@ -34,9 +34,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(report);
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error';
-    const friendly = message.includes('429') || message.toLowerCase().includes('rate limit')
-      ? 'Anthropic API rate limit reached — retried automatically but limit persisted. Wait 1–2 minutes then try again.'
-      : message;
+    const friendly =
+      message.includes('529') || message.toLowerCase().includes('overloaded')
+        ? 'Anthropic API is overloaded right now — retried automatically but still busy. Wait a minute and try again.'
+        : message.includes('429') || message.toLowerCase().includes('rate limit')
+        ? 'Anthropic API rate limit reached — retried automatically but limit persisted. Wait 1–2 minutes then try again.'
+        : message;
     return NextResponse.json({ error: friendly }, { status: 500 });
   }
 }
