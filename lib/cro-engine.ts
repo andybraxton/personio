@@ -266,7 +266,7 @@ export async function runCROEngine(inputs: CROInputs): Promise<CROReport> {
   const now = new Date();
 
   const message = await createMessageWithRetry({
-    model: 'claude-opus-4-7',
+    model: 'claude-sonnet-4-6',
     max_tokens: 8000,
     tools: [ENGINE_TOOL],
     tool_choice: { type: 'tool', name: 'output_cro_analysis' },
