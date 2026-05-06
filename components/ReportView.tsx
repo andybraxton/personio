@@ -93,21 +93,21 @@ export default function ReportView({ report, onBack }: Props) {
               onClick={() => setActiveTab('signals')}
               className="bg-slate-900/60 border border-slate-700/50 rounded-lg p-3 text-center hover:border-slate-500 transition-colors"
             >
-              <p className="text-2xl font-black text-slate-200">{report.signals.length}</p>
+              <p className="text-2xl font-black text-slate-200">{(report.signals ?? []).length}</p>
               <p className="text-xs text-slate-500 mt-0.5">Signals</p>
             </button>
             <button
               onClick={() => setActiveTab('opportunities')}
               className="bg-slate-900/60 border border-slate-700/50 rounded-lg p-3 text-center hover:border-teal-600 transition-colors"
             >
-              <p className="text-2xl font-black text-teal-300">{report.opportunities.length}</p>
+              <p className="text-2xl font-black text-teal-300">{(report.opportunities ?? []).length}</p>
               <p className="text-xs text-slate-500 mt-0.5">Opportunities</p>
             </button>
             <button
               onClick={() => setActiveTab('experiments')}
               className="bg-slate-900/60 border border-slate-700/50 rounded-lg p-3 text-center hover:border-orange-600 transition-colors"
             >
-              <p className="text-2xl font-black text-orange-300">{report.experiments.length}</p>
+              <p className="text-2xl font-black text-orange-300">{(report.experiments ?? []).length}</p>
               <p className="text-xs text-slate-500 mt-0.5">Experiments</p>
             </button>
           </div>
@@ -130,9 +130,9 @@ export default function ReportView({ report, onBack }: Props) {
       </div>
 
       {/* Tab content */}
-      {activeTab === 'signals' && <SignalsList signals={report.signals} />}
-      {activeTab === 'opportunities' && <OpportunitiesList opportunities={report.opportunities} />}
-      {activeTab === 'experiments' && <ExperimentsList experiments={report.experiments} />}
+      {activeTab === 'signals' && <SignalsList signals={report.signals ?? []} />}
+      {activeTab === 'opportunities' && <OpportunitiesList opportunities={report.opportunities ?? []} />}
+      {activeTab === 'experiments' && <ExperimentsList experiments={report.experiments ?? []} />}
       {activeTab === 'pages' && <ScannedPages pages={report.scrapedPages ?? []} />}
     </div>
   );
