@@ -1,6 +1,6 @@
 import { parse } from 'node-html-parser';
-import { request as httpsRequest } from 'https';
-import { request as httpRequest, IncomingMessage } from 'http';
+import https from 'node:https';
+import http, { IncomingMessage } from 'node:http';
 import { ScrapedPage } from '@/types';
 
 const BROWSER_UA =
@@ -31,7 +31,7 @@ function nodeFetch(
     }
 
     const isHttps = parsed.protocol === 'https:';
-    const lib = isHttps ? httpsRequest : httpRequest;
+    const lib = isHttps ? https : http;
     const port = parsed.port ? parseInt(parsed.port) : isHttps ? 443 : 80;
 
     const options = {

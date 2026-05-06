@@ -24,17 +24,16 @@ function sleep(ms: number) {
 
 async function createMessageWithRetry(
   params: Parameters<typeof client.messages.create>[0]
-): ReturnType<typeof client.messages.create> {
+): Promise<Anthropic.Message> {
   const maxAttempts = 4;
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
     try {
-      return await client.messages.create(params);
+      return await client.messages.create(params) as Anthropic.Message;
     } catch (err: unknown) {
       const status = (err as { status?: number })?.status;
       const headers = (err as { headers?: Record<string, string> })?.headers;
       if ((status === 429 || status === 529) && attempt < maxAttempts - 1) {
         const retryAfter = headers?.['retry-after'];
-        // 529 = overloaded (no Retry-After), 429 = rate limited (may have Retry-After)
         const waitMs = retryAfter ? parseInt(retryAfter) * 1000 : (attempt + 1) * 20_000;
         await sleep(waitMs);
         continue;
