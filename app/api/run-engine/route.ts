@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error';
     const friendly = message.includes('429') || message.toLowerCase().includes('rate limit')
-      ? 'Anthropic API rate limit reached (429). Wait a minute then try again.'
+      ? 'Anthropic API rate limit reached — retried automatically but limit persisted. Wait 1–2 minutes then try again.'
       : message;
     return NextResponse.json({ error: friendly }, { status: 500 });
   }

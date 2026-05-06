@@ -14,9 +14,36 @@ import {
 } from '@/types';
 
 const client = new Anthropic({
-  maxRetries: 6,       // retry up to 6 times on 429/5xx
-  timeout: 180_000,    // 3 minute timeout per attempt
+  maxRetries: 0,    // we handle retries manually below to respect Retry-After
+  timeout: 180_000,
 });
+
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function createMessageWithRetry(
+  params: Parameters<typeof client.messages.create>[0]
+): ReturnType<typeof client.messages.create> {
+  const maxAttempts = 4;
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    try {
+      return await client.messages.create(params);
+    } catch (err: unknown) {
+      const status = (err as { status?: number })?.status;
+      const headers = (err as { headers?: Record<string, string> })?.headers;
+      if (status === 429 && attempt < maxAttempts - 1) {
+        const retryAfter = headers?.['retry-after'];
+        // Respect the server's Retry-After, or wait 30s / 60s / 90s progressively
+        const waitMs = retryAfter ? parseInt(retryAfter) * 1000 : (attempt + 1) * 30_000;
+        await sleep(waitMs);
+        continue;
+      }
+      throw err;
+    }
+  }
+  throw new Error('Max retries exceeded');
+}
 
 function formatDate(date: Date): string {
   return date.toLocaleDateString('en-GB', {
@@ -238,7 +265,7 @@ export async function runCROEngine(inputs: CROInputs): Promise<CROReport> {
   const startTime = Date.now();
   const now = new Date();
 
-  const message = await client.messages.create({
+  const message = await createMessageWithRetry({
     model: 'claude-opus-4-7',
     max_tokens: 8000,
     tools: [ENGINE_TOOL],
