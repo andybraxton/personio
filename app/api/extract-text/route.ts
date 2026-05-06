@@ -1,5 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+async function extractDocx(buffer: Buffer): Promise<string> {
+  const mammoth = await import('mammoth');
+
+  // xmldom emits noisy warnings to console.error for some valid DOCX files — suppress them
+  const originalConsoleError = console.error;
+  console.error = () => {};
+  try {
+    const result = await mammoth.extractRawText({ buffer });
+    return result.value;
+  } finally {
+    console.error = originalConsoleError;
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
@@ -19,9 +33,7 @@ export async function POST(req: NextRequest) {
       const result = await parser.getText();
       text = result.text;
     } else if (name.endsWith('.docx')) {
-      const mammoth = await import('mammoth');
-      const result = await mammoth.extractRawText({ buffer });
-      text = result.value;
+      text = await extractDocx(buffer);
     } else {
       text = buffer.toString('utf-8');
     }
