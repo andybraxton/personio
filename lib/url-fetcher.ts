@@ -1,5 +1,6 @@
 import { parse } from 'node-html-parser';
 import { spawnSync } from 'child_process';
+import { existsSync } from 'fs';
 import path from 'path';
 import { ScrapedPage } from '@/types';
 
@@ -7,12 +8,31 @@ function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+function getVenvPython(): string {
+  const scriptsDir = path.join(process.cwd(), 'scripts');
+  const venvDir = path.join(scriptsDir, '.venv');
+  const venvPython = path.join(venvDir, 'bin', 'python3');
+
+  if (!existsSync(venvPython)) {
+    // Create venv
+    const create = spawnSync('python3', ['-m', 'venv', venvDir], { encoding: 'utf8' });
+    if (create.status !== 0) throw new Error(`Failed to create venv: ${create.stderr}`);
+
+    // Install requests into venv
+    const install = spawnSync(venvPython, ['-m', 'pip', 'install', 'requests', '-q'], { encoding: 'utf8' });
+    if (install.status !== 0) throw new Error(`Failed to install requests: ${install.stderr}`);
+  }
+
+  return venvPython;
+}
+
 function fetchWithPython(url: string): { status: number; html: string; finalUrl: string } {
+  const python = getVenvPython();
   const scriptPath = path.join(process.cwd(), 'scripts', 'scrape_url.py');
-  const result = spawnSync('python3', [scriptPath, url], {
+  const result = spawnSync(python, [scriptPath, url], {
     timeout: 20000,
     encoding: 'utf8',
-    maxBuffer: 10 * 1024 * 1024, // 10MB
+    maxBuffer: 10 * 1024 * 1024,
   });
 
   if (result.error) throw result.error;

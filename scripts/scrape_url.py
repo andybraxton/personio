@@ -1,16 +1,9 @@
 #!/usr/bin/env python3
-"""Fetch a URL using requests and print JSON to stdout."""
+"""Fetch a URL using requests and print JSON to stdout.
+Always called via the project venv (scripts/.venv) which has requests installed."""
 import json
 import sys
-import subprocess
-
-try:
-    import requests
-except ImportError:
-    subprocess.check_call([
-        sys.executable, '-m', 'pip', 'install', '--user', 'requests', '-q'
-    ])
-    import requests
+import requests
 
 UA = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
