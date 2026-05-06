@@ -1,7 +1,45 @@
 'use client';
 
 import { useState } from 'react';
-import { CROReport } from '@/types';
+import { CROReport, ScrapedPage } from '@/types';
+
+function ScannedPages({ pages }: { pages: ScrapedPage[] }) {
+  if (pages.length === 0) {
+    return <p className="text-sm text-slate-500 text-center py-8">No pages were scanned in this report.</p>;
+  }
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-2 mb-4">
+        <div className="w-2 h-2 rounded-full bg-cyan-400" />
+        <h3 className="text-sm font-bold uppercase tracking-widest text-slate-300">Scanned Journey Pages</h3>
+        <span className="ml-auto text-xs text-slate-500">{pages.length} pages</span>
+      </div>
+      {pages.map((p) => (
+        <div key={p.url} className="bg-slate-900/50 border border-slate-700/50 rounded-xl overflow-hidden">
+          <div className="flex items-center gap-3 px-4 py-3 border-b border-slate-700/50 bg-cyan-950/20">
+            <span className="w-6 h-6 rounded-full bg-cyan-800/50 text-cyan-200 text-xs font-bold flex items-center justify-center shrink-0">
+              {p.step}
+            </span>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-cyan-200 truncate">{p.title}</p>
+              <p className="text-xs text-slate-500 truncate">{p.url}</p>
+            </div>
+            {p.error && (
+              <span className="text-xs text-red-400 bg-red-900/20 border border-red-800/40 px-2 py-0.5 rounded-full">
+                {p.error}
+              </span>
+            )}
+          </div>
+          {p.text ? (
+            <p className="px-4 py-3 text-xs text-slate-400 leading-relaxed line-clamp-6">{p.text}</p>
+          ) : (
+            <p className="px-4 py-3 text-xs text-slate-600 italic">No content extracted.</p>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
 import SignalsList from './SignalsList';
 import OpportunitiesList from './OpportunitiesList';
 import ExperimentsList from './ExperimentsList';
@@ -11,12 +49,13 @@ interface Props {
   onBack: () => void;
 }
 
-type Tab = 'signals' | 'opportunities' | 'experiments';
+type Tab = 'signals' | 'opportunities' | 'experiments' | 'pages';
 
 const TABS: { id: Tab; label: string; color: string; activeColor: string }[] = [
   { id: 'signals', label: 'Signals', color: 'text-slate-400', activeColor: 'text-slate-200 border-b-2 border-slate-400' },
   { id: 'opportunities', label: 'Opportunities', color: 'text-slate-400', activeColor: 'text-teal-300 border-b-2 border-teal-400' },
   { id: 'experiments', label: 'Experiments', color: 'text-slate-400', activeColor: 'text-orange-300 border-b-2 border-orange-400' },
+  { id: 'pages', label: 'Scanned Pages', color: 'text-slate-400', activeColor: 'text-cyan-300 border-b-2 border-cyan-400' },
 ];
 
 export default function ReportView({ report, onBack }: Props) {
@@ -77,7 +116,7 @@ export default function ReportView({ report, onBack }: Props) {
 
       {/* Tab nav */}
       <div className="flex border-b border-slate-700/50 mb-6">
-        {TABS.map((tab) => (
+        {TABS.filter((t) => t.id !== 'pages' || (report.scrapedPages ?? []).length > 0).map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
@@ -94,6 +133,7 @@ export default function ReportView({ report, onBack }: Props) {
       {activeTab === 'signals' && <SignalsList signals={report.signals} />}
       {activeTab === 'opportunities' && <OpportunitiesList opportunities={report.opportunities} />}
       {activeTab === 'experiments' && <ExperimentsList experiments={report.experiments} />}
+      {activeTab === 'pages' && <ScannedPages pages={report.scrapedPages ?? []} />}
     </div>
   );
 }

@@ -4,6 +4,7 @@ export interface CROInputs {
   experience: string;
   evidence: string;
   supportingInput: string;
+  journeyUrls?: string[];
 }
 
 export interface SignalScores {
@@ -83,11 +84,20 @@ export interface Experiment {
   confidenceRationale: string;
 }
 
+export interface ScrapedPage {
+  url: string;
+  step: number;
+  title: string;
+  text: string;
+  error?: string;
+}
+
 export interface CROReport {
   id: string;
   createdAt: string;
   title: string;
   inputs: CROInputs;
+  scrapedPages?: ScrapedPage[];
   signals: Signal[];
   opportunities: Opportunity[];
   experiments: Experiment[];
