@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+import mammoth from 'mammoth';
+import { PDFParse } from 'pdf-parse';
 
 export async function POST(req: NextRequest) {
   try {
@@ -14,21 +16,16 @@ export async function POST(req: NextRequest) {
     let text = '';
 
     if (name.endsWith('.pdf')) {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const pdfParse = require('pdf-parse');
-      const data = await pdfParse(buffer);
-      text = data.text;
+      const parser = new PDFParse({ data: new Uint8Array(buffer) });
+      const result = await parser.getText();
+      text = result.text;
     } else if (name.endsWith('.docx')) {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const mammoth = require('mammoth');
       const result = await mammoth.extractRawText({ buffer });
       text = result.value;
     } else {
-      // plain text, markdown, csv etc.
       text = buffer.toString('utf-8');
     }
 
-    // Clean up excessive whitespace
     text = text.replace(/\r\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
 
     return NextResponse.json({ text, filename: file.name });
