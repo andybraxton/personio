@@ -1,14 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-async function extractDocxFallback(buffer: Buffer): Promise<string> {
+async function extractDocx(buffer: Buffer): Promise<string> {
   const AdmZip = (await import('adm-zip')).default;
   const zip = new AdmZip(buffer);
   const entry = zip.getEntry('word/document.xml');
-  if (!entry) return '';
+  if (!entry) throw new Error('Could not find document content in DOCX file');
+
   const xml = entry.getData().toString('utf-8');
   return xml
-    .replace(/<w:p[ >][^>]*>/g, '\n')  // paragraph tags → newlines
-    .replace(/<[^>]+>/g, '')            // strip all remaining tags
+    .replace(/<w:p[ >][^>]*>/gi, '\n')
+    .replace(/<[^>]+>/g, '')
     .replace(/&amp;/g, '&')
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
@@ -16,21 +17,6 @@ async function extractDocxFallback(buffer: Buffer): Promise<string> {
     .replace(/&#39;/g, "'")
     .replace(/\s+/g, ' ')
     .trim();
-}
-
-async function extractDocx(buffer: Buffer): Promise<string> {
-  const mammoth = await import('mammoth');
-  const originalConsoleError = console.error;
-  console.error = () => {};
-  try {
-    const result = await mammoth.extractRawText({ buffer });
-    return result.value;
-  } catch {
-    // Fallback: unzip the DOCX and parse the raw XML directly
-    return extractDocxFallback(buffer);
-  } finally {
-    console.error = originalConsoleError;
-  }
 }
 
 export async function POST(req: NextRequest) {
