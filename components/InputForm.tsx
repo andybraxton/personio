@@ -336,15 +336,19 @@ export default function InputForm({ onSubmit, loading }: Props) {
           <div className="flex-1 h-px bg-purple-800/30" />
         </div>
         <div className="space-y-5">
-          {FIELDS.slice(0, 2).map(({ key, ...rest }) => (
-            <UploadZone key={key} fieldKey={key} {...rest} state={fields[key]} onChange={updateField(key)} />
+          {FIELDS.slice(0, 2).map(({ key, label, sublabel, accent, border, dragBg }) => (
+            <UploadZone key={key} fieldKey={key} label={label} sublabel={sublabel} accent={accent} border={border} dragBg={dragBg} state={fields[key]} onChange={updateField(key)} />
           ))}
 
           {/* Experience + Journey URLs */}
           <div>
             <UploadZone
               fieldKey="experience"
-              {...FIELDS[2]}
+              label={FIELDS[2].label}
+              sublabel={FIELDS[2].sublabel}
+              accent={FIELDS[2].accent}
+              border={FIELDS[2].border}
+              dragBg={FIELDS[2].dragBg}
               state={fields.experience}
               onChange={updateField('experience')}
             />
@@ -404,8 +408,8 @@ export default function InputForm({ onSubmit, loading }: Props) {
           <div className="flex-1 h-px bg-slate-700/40" />
         </div>
         <div className="space-y-5">
-          {FIELDS.slice(3).map(({ key, ...rest }) => (
-            <UploadZone key={key} fieldKey={key} {...rest} state={fields[key]} onChange={updateField(key)} />
+          {FIELDS.slice(3).map(({ key, label, sublabel, accent, border, dragBg }) => (
+            <UploadZone key={key} fieldKey={key} label={label} sublabel={sublabel} accent={accent} border={border} dragBg={dragBg} state={fields[key]} onChange={updateField(key)} />
           ))}
         </div>
       </div>
