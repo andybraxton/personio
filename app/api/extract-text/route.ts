@@ -1,14 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+async function extractDocxFallback(buffer: Buffer): Promise<string> {
+  const AdmZip = (await import('adm-zip')).default;
+  const zip = new AdmZip(buffer);
+  const entry = zip.getEntry('word/document.xml');
+  if (!entry) return '';
+  const xml = entry.getData().toString('utf-8');
+  return xml
+    .replace(/<w:p[ >][^>]*>/g, '\n')  // paragraph tags → newlines
+    .replace(/<[^>]+>/g, '')            // strip all remaining tags
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 async function extractDocx(buffer: Buffer): Promise<string> {
   const mammoth = await import('mammoth');
-
-  // xmldom emits noisy warnings to console.error for some valid DOCX files — suppress them
   const originalConsoleError = console.error;
   console.error = () => {};
   try {
     const result = await mammoth.extractRawText({ buffer });
     return result.value;
+  } catch {
+    // Fallback: unzip the DOCX and parse the raw XML directly
+    return extractDocxFallback(buffer);
   } finally {
     console.error = originalConsoleError;
   }
