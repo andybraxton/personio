@@ -94,7 +94,7 @@ export default function Home() {
             </div>
             <span className="font-bold text-white tracking-tight">CRO Engine</span>
             <span className="text-slate-600 text-sm">Admin</span>
-            <span className="text-xs font-mono text-slate-600 bg-slate-800 px-1.5 py-0.5 rounded">v2.2</span>
+            <span className="text-xs font-mono text-slate-600 bg-slate-800 px-1.5 py-0.5 rounded">v2.3</span>
           </div>
 
           <div className="ml-auto">

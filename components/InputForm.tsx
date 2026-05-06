@@ -276,17 +276,52 @@ function UploadZone({
   );
 }
 
+const STORAGE_KEY = 'cro-form-state';
 const emptyField = (): FieldState => ({ files: [], dragging: false });
 
+function loadSaved(): { fields: Record<string, FieldState>; journeyUrls: string[] } | null {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    // Restore only successfully extracted files
+    const fields: Record<string, FieldState> = {};
+    for (const key of ['business', 'user', 'experience', 'evidence', 'supportingInput']) {
+      const saved = parsed.fields?.[key]?.files ?? [];
+      fields[key] = { files: saved.filter((f: UploadedFile) => f.status === 'done'), dragging: false };
+    }
+    return { fields, journeyUrls: parsed.journeyUrls ?? [''] };
+  } catch {
+    return null;
+  }
+}
+
 export default function InputForm({ onSubmit, loading }: Props) {
-  const [fields, setFields] = useState<Record<string, FieldState>>({
-    business: emptyField(),
-    user: emptyField(),
-    experience: emptyField(),
-    evidence: emptyField(),
-    supportingInput: emptyField(),
-  });
-  const [journeyUrls, setJourneyUrls] = useState<string[]>(['']);
+  const saved = typeof window !== 'undefined' ? loadSaved() : null;
+  const [fields, setFields] = useState<Record<string, FieldState>>(
+    saved?.fields ?? {
+      business: emptyField(),
+      user: emptyField(),
+      experience: emptyField(),
+      evidence: emptyField(),
+      supportingInput: emptyField(),
+    }
+  );
+  const [journeyUrls, setJourneyUrls] = useState<string[]>(saved?.journeyUrls ?? ['']);
+
+  // Persist to localStorage whenever state changes (only save done files)
+  useEffect(() => {
+    const toSave = {
+      fields: Object.fromEntries(
+        Object.entries(fields).map(([k, v]) => [
+          k,
+          { files: v.files.filter((f) => f.status === 'done') },
+        ])
+      ),
+      journeyUrls,
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
+  }, [fields, journeyUrls]);
 
   function updateField(key: string) {
     return (updater: (prev: FieldState) => FieldState) => {
