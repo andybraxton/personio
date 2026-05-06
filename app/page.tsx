@@ -94,7 +94,7 @@ export default function Home() {
             </div>
             <span className="font-bold text-white tracking-tight">CRO Engine</span>
             <span className="text-slate-600 text-sm">Admin</span>
-            <span className="text-xs font-mono text-slate-600 bg-slate-800 px-1.5 py-0.5 rounded">v1.3</span>
+            <span className="text-xs font-mono text-slate-600 bg-slate-800 px-1.5 py-0.5 rounded">v1.4</span>
           </div>
 
           <div className="ml-auto">
@@ -124,10 +124,13 @@ export default function Home() {
               ) : (
                 <div className="space-y-1">
                   {reports.map((r) => (
-                    <button
+                    <div
                       key={r.id}
+                      role="button"
+                      tabIndex={0}
                       onClick={() => handleLoadReport(r.id)}
-                      className={`w-full text-left rounded-lg px-3 py-2.5 group transition-colors ${
+                      onKeyDown={(e) => e.key === 'Enter' && handleLoadReport(r.id)}
+                      className={`w-full text-left rounded-lg px-3 py-2.5 group transition-colors cursor-pointer ${
                         view.type === 'report' && view.report.id === r.id
                           ? 'bg-slate-700/60 border border-slate-600/50'
                           : 'hover:bg-slate-800/60 border border-transparent'
@@ -161,7 +164,7 @@ export default function Home() {
                         <span className="text-slate-700">·</span>
                         <span className="text-xs text-slate-600">{r.experimentCount}E</span>
                       </div>
-                    </button>
+                    </div>
                   ))}
                 </div>
               )}
