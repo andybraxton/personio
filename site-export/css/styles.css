@@ -688,8 +688,7 @@ p.lead { font-size: 1.0625rem; line-height: var(--lh-lead); }
   .sprint__grid { grid-template-columns: repeat(2, 1fr); grid-template-rows: auto auto auto auto; }
   .sprint__col-top:nth-of-type(2) { border-right: none; }
   .sprint__col-top:nth-of-type(3) { border-top: 1px solid var(--light-grey); }
-  .sprint__visual:nth-of-type(2) { border-right: none; }
-  .sprint__visual:nth-of-type(3) { border-top: 1px solid var(--light-grey); }
+  .sprint__visual { display: none; }
   .footer__inner { grid-template-columns: 1fr 1fr; }
 }
 
@@ -699,8 +698,21 @@ p.lead { font-size: 1.0625rem; line-height: var(--lh-lead); }
   .nav__hamburger { display: flex; }
   .btn { padding: 14px 20px; }
   .hero__inner { grid-template-columns: 1fr; gap: 40px; }
+  .hero__image { order: -1; }
   .system__grid { grid-template-columns: 1fr; }
-  .system__step { padding: 28px 0 !important; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); }
+  .system__step {
+    padding: 28px 0 !important;
+    border-right: none;
+    border-bottom: none;
+  }
+  .system__step + .system__step {
+    border-top: 1px solid rgba(255,255,255,0.06);
+    margin-left: calc(-1 * var(--gutter));
+    margin-right: calc(-1 * var(--gutter));
+    padding-left: var(--gutter) !important;
+    padding-right: var(--gutter) !important;
+  }
+  .system__result { border-top: 1px solid rgba(255,255,255,0.18); }
   .problem__inner { grid-template-columns: 1fr; gap: 40px; }
   .trust-gaps__grid { grid-template-columns: 1fr 1fr; }
   .trust-gaps__stats { grid-template-columns: 1fr 1fr; }
@@ -709,7 +721,6 @@ p.lead { font-size: 1.0625rem; line-height: var(--lh-lead); }
   .sprint__grid { grid-template-columns: 1fr; grid-template-rows: unset; }
   .sprint__col-top { border-right: none; border-top: 1px solid var(--light-grey); }
   .sprint__col-top:first-of-type { border-top: none; }
-  .sprint__visual { border-right: none; }
   .sprint__cta { flex-direction: column; align-items: flex-start; }
   .cta-band__inner { flex-direction: column; align-items: flex-start; }
   .footer__inner { grid-template-columns: 1fr; }
