@@ -188,64 +188,89 @@ export default function SitePage() {
           </div>
         </section>
 
-        {/* WHAT WE DO */}
-        <section className="services" aria-labelledby="services-heading">
+        {/* WHERE TRUST BREAKS */}
+        <section className="trust-gaps" aria-labelledby="trust-gaps-heading">
           <div className="container">
-            <div className="services__inner">
-              <div className="services__left">
-                <span className="label">What We Do</span>
-                <h2 id="services-heading">Built for teams who need results, not reports.</h2>
-                <p>We combine product thinking, UX expertise, and behavioural insight to remove friction, build trust, and design experiences that convert — and keep converting.</p>
-                <a href="/site/approach" className="btn btn--ghost">
-                  Learn more about our approach
-                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                    <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </a>
+
+            {/* Header row */}
+            <div className="trust-gaps__header">
+              <div className="trust-gaps__header-left">
+                <span className="label">Where Trust Breaks</span>
+                <h2 id="trust-gaps-heading">It&apos;s rarely the offer.<br />It&apos;s the experience.</h2>
+                <p>Across hundreds of high-intent websites, we see the same confidence gaps that quietly cost businesses leads, revenue, and growth.</p>
               </div>
-              <div className="services__grid">
-                <div className="services__item">
-                  <div className="services__item-icon" aria-hidden="true">
-                    <svg viewBox="0 0 36 36" fill="none">
-                      <circle cx="18" cy="18" r="14" stroke="currentColor" strokeWidth="1.5"/>
-                      <circle cx="18" cy="18" r="6" stroke="currentColor" strokeWidth="1.5"/>
-                      <path d="M18 4v4M18 28v4M4 18h4M28 18h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                    </svg>
+              <div className="trust-gaps__header-right">
+                <div className="trust-gaps__insight-card">
+                  <div className="trust-gaps__insight-icon" aria-hidden="true">
+                    <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="10" stroke="currentColor" strokeWidth="1.5"/><path d="M11 7v5M11 15v.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
                   </div>
-                  <h4>Diagnose</h4>
-                  <p>Identify where trust breaks down and decisions stall.</p>
-                </div>
-                <div className="services__item">
-                  <div className="services__item-icon" aria-hidden="true">
-                    <svg viewBox="0 0 36 36" fill="none">
-                      <rect x="6" y="6" width="24" height="24" rx="2" stroke="currentColor" strokeWidth="1.5"/>
-                      <path d="M12 18l4 4 8-8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
+                  <div>
+                    <h4>Trust isn&apos;t built in one moment.</h4>
+                    <p>It&apos;s earned across dozens of small interactions. When any of them create doubt, visitors hesitate — and most won&apos;t come back.</p>
                   </div>
-                  <h4>Restructure</h4>
-                  <p>Reframe messaging, information hierarchy, and user flow.</p>
-                </div>
-                <div className="services__item">
-                  <div className="services__item-icon" aria-hidden="true">
-                    <svg viewBox="0 0 36 36" fill="none">
-                      <rect x="4" y="8" width="28" height="20" rx="2" stroke="currentColor" strokeWidth="1.5"/>
-                      <path d="M12 32h12M18 28v4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                    </svg>
-                  </div>
-                  <h4>Design &amp; Validate</h4>
-                  <p>Create concepts, prototypes, and test to reduce risk.</p>
-                </div>
-                <div className="services__item">
-                  <div className="services__item-icon" aria-hidden="true">
-                    <svg viewBox="0 0 36 36" fill="none">
-                      <path d="M6 26l8-10 6 6 6-8 4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </div>
-                  <h4>Embed &amp; Scale</h4>
-                  <p>Implement and build systems for continuous improvement.</p>
                 </div>
               </div>
             </div>
+
+            {/* Gap cards */}
+            <div className="trust-gaps__grid">
+              {[
+                { num: '01', icon: <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M4 3h14a1 1 0 011 1v10a1 1 0 01-1 1H7l-4 3V4a1 1 0 011-1z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/><path d="M9 9h.5M11 9h.5M13 9h.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>, title: 'Unclear what you do', body: 'Vague messaging or jargon makes it hard to understand the value.', level: 'High', filled: 4 },
+                { num: '02', icon: <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 2L3 5.5v6c0 4.1 3.5 7.7 8 8.5 4.5-.8 8-4.4 8-8.5v-6L11 2z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/></svg>, title: 'Missing reasons to trust', body: 'Lack of proof, credibility signals, or customer validation creates doubt.', level: 'High', filled: 4 },
+                { num: '03', icon: <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 4v14M4 11l7-7 7 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M2 15h4M16 15h4M2 18h4M16 18h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>, title: 'No clear next step', body: 'Too many choices or unclear CTAs leave visitors unsure what to do.', level: 'High', filled: 4 },
+                { num: '04', icon: <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="3" y="4" width="16" height="14" rx="1.5" stroke="currentColor" strokeWidth="1.5"/><path d="M7 9h8M7 12h5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>, title: 'Too much friction', body: 'Long forms, unnecessary fields, or complex steps create drop-off.', level: 'High', filled: 4 },
+                { num: '05', icon: <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="9" stroke="currentColor" strokeWidth="1.5"/><path d="M11 6v5l3 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>, title: 'Slow or clunky experience', body: 'Performance issues or poor mobile experience erode confidence instantly.', level: 'Medium', filled: 3 },
+              ].map(({ num, icon, title, body, level, filled }) => (
+                <div key={num} className="trust-gaps__card">
+                  <div className="trust-gaps__card-top">
+                    <div className="trust-gaps__card-icon" aria-hidden="true">{icon}</div>
+                    <span className="trust-gaps__card-num">{num}</span>
+                  </div>
+                  <h4>{title}</h4>
+                  <p>{body}</p>
+                  <div className="trust-gaps__card-footer">
+                    <span className="trust-gaps__drop-label">Confidence Drop</span>
+                    <span className={`trust-gaps__drop-level trust-gaps__drop-level--${level.toLowerCase()}`}>{level}</span>
+                    <div className="trust-gaps__bar" aria-label={`${level} confidence drop`}>
+                      {Array.from({ length: 7 }, (_, i) => (
+                        <span key={i} className={`trust-gaps__bar-seg${i < filled ? ' trust-gaps__bar-seg--on' : ''}`} />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Stats row */}
+            <div className="trust-gaps__stats">
+              <div className="trust-gaps__stats-intro"><p>The numbers behind<br />lost confidence</p></div>
+              {[
+                { num: '80%', text: 'Only read your headline and first line of copy.', source: 'Nielsen Norman Group' },
+                { num: '57%', text: 'Of engagement time happens above the fold.', source: '29a Chloe' },
+                { num: '50%+', text: 'Lift in conversions from removing one form field.', source: 'Unbounce' },
+                { num: '7%', text: 'Drop in conversions for every 1s of load time.', source: 'Cloudflare' },
+                { num: '0.05s', text: 'The time it takes to form a first impression.', source: 'MIT / Princeton Research' },
+              ].map(({ num, text, source }) => (
+                <div key={num} className="trust-gaps__stat">
+                  <div className="trust-gaps__stat-num">{num}</div>
+                  <p>{text}</p>
+                  <span className="trust-gaps__stat-source">{source}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Closing CTA */}
+            <div className="trust-gaps__close">
+              <div className="trust-gaps__close-icon" aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M3 15l4-5 4 4 4-6 4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              </div>
+              <p><strong>We close these gaps.</strong> Systematically. Continuously. Built around how real buyers make decisions.</p>
+              <a href="/site/approach" className="trust-gaps__close-link">
+                See our approach
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              </a>
+            </div>
+
           </div>
         </section>
 
