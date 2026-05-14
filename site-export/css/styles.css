@@ -678,6 +678,77 @@ p.lead { font-size: 1.0625rem; line-height: var(--lh-lead); }
 .sprint__cta-text strong { display: block; font-size: 0.9375rem; font-weight: 700; color: var(--black); margin-bottom: 2px; }
 .sprint__cta-text p { font-size: 0.875rem; color: var(--mid-grey); }
 
+/* ── ABOUT ── */
+.about { padding: var(--section-pad) 0; border-top: 1px solid var(--light-grey); background: var(--white); }
+.about__inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: start;
+}
+.about__left .label { margin-bottom: 16px; }
+.about__left h2 { margin-bottom: 24px; }
+.about__left p { margin-bottom: 16px; }
+.about__left p:last-of-type { margin-bottom: 32px; }
+
+.about__logos {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.about__logo {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: rgba(44,44,58,0.4);
+  text-transform: uppercase;
+}
+.about__logo-divider {
+  width: 1px;
+  height: 14px;
+  background: var(--light-grey);
+  flex-shrink: 0;
+}
+
+.about__stats {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid var(--light-grey);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+.about__stat {
+  padding: 24px 28px;
+  border-bottom: 1px solid var(--light-grey);
+}
+.about__stat:last-child { border-bottom: none; }
+.about__stat-num {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--orange);
+  letter-spacing: -0.03em;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.about__stat p { font-size: 0.8125rem; line-height: 1.55; }
+
+.about__note {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 18px 20px;
+  background: var(--fennec);
+  border: 1px solid var(--light-grey);
+  border-radius: 4px;
+  color: var(--mid-grey);
+}
+.about__note svg { flex-shrink: 0; margin-top: 1px; color: var(--orange); }
+.about__note p { font-size: 0.875rem; font-style: italic; color: var(--black); line-height: 1.5; }
+
 /* ── RESPONSIVE ── */
 @media (max-width: 1024px) {
   :root { --gutter: 28px; }
@@ -689,6 +760,7 @@ p.lead { font-size: 1.0625rem; line-height: var(--lh-lead); }
   .sprint__col-top:nth-of-type(2) { border-right: none; }
   .sprint__col-top:nth-of-type(3) { border-top: 1px solid var(--light-grey); }
   .sprint__visual { display: none; }
+  .about__inner { grid-template-columns: 1fr; gap: 48px; }
   .footer__inner { grid-template-columns: 1fr 1fr; }
 }
 
