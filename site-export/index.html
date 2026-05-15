@@ -470,28 +470,37 @@
     </section>
 
     <!-- ENGAGEMENT CTA BAND -->
-    <section class="cta-band" aria-label="Start an engagement">
+    <section class="cta-band" aria-label="Book a call">
       <div class="container">
         <div class="cta-band__inner">
-          <div class="cta-band__left">
-            <div class="cta-band__arrow-circle" aria-hidden="true">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 10h14M11 4l6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </div>
-            <div class="cta-band__text">
-              <h3>Start with a focused engagement.</h3>
-              <p>Perfect for smaller teams or a first step towards bigger change. Delivered in 7 business days.</p>
-            </div>
+          <div class="cta-band__header">
+            <p class="cta-band__eyebrow">Free · No obligation · 20 minutes</p>
+            <h2 class="cta-band__heading">Book a call with Andy</h2>
+            <p class="cta-band__sub">We'll come prepared with initial observations on your site and talk through where the biggest trust and conversion opportunities are.</p>
           </div>
-          <div class="cta-band__right">
-            <a href="contact.html" class="btn btn--primary">
-              Book my free homepage review
+          <form class="cta-band__form" action="https://formsubmit.co/hi@hightrustdigital.com" method="POST">
+            <input type="hidden" name="_subject" value="New enquiry from hightrustdigital.com" />
+            <input type="hidden" name="_next" value="thanks.html" />
+            <input type="hidden" name="_captcha" value="false" />
+            <div class="cta-band__fields">
+              <div class="cta-band__field">
+                <label for="contact-name">Your name</label>
+                <input id="contact-name" type="text" name="name" placeholder="Jane Smith" required autocomplete="name" />
+              </div>
+              <div class="cta-band__field">
+                <label for="contact-email">Work email</label>
+                <input id="contact-email" type="email" name="email" placeholder="jane@company.com" required autocomplete="email" />
+              </div>
+              <div class="cta-band__field">
+                <label for="contact-url">Website URL</label>
+                <input id="contact-url" type="url" name="website" placeholder="https://yoursite.com" autocomplete="url" />
+              </div>
+            </div>
+            <button type="submit" class="btn btn--submit">
+              Request my free call
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </a>
-            <a href="approach.html" class="btn btn--ghost-light">
-              What's included
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </a>
-          </div>
+            </button>
+          </form>
         </div>
       </div>
     </section>
